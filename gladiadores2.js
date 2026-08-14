@@ -4,8 +4,8 @@
  * Existen cuatro tipos de personajes: guerreros, asesinos, magos y curanderos.
  * Los guerreros tienen: mucha vida, daño físico intermedio y poca stamina.
  * Los asesinos tienen: poca vida, gran daño físico y stamina intermedia.
- * Los magos tienen: poca vida, gran daño mágico y poca stamina.
- * Los curanderos tienen: poca vida, poco daño y poca stamina.
+ * Los magos tienen: poca vida, gran daño mágico y gran mana.
+ * Los curanderos tienen: poca vida, poco daño y poca mana.
  * 
  * Los guerreros tienen un bonus de defensa a sus cualidades de vida.
  * Los asesinos aplican veneno con sus ataques, potenciando su daño.
@@ -22,21 +22,28 @@
  */
 
 class Luchador {
+    name;
     vida;
     ataque;
     stamina;
+
+    getName(){
+        return this.name;
+    }
+
+    setName(name){
+        this.name = name;
+    }
 
     getVida(){
         return this.vida;
     }
 
     setVida(vida){
-        if(vida < 0){
-            this.vida = 0
-        }else{
-            this.vida = vida;
+        this.vida = vida <= 0 ? 0: vida;
+        if(!this.vida){
+            console.log(`${this.getName()} ha muerto!`)
         }
-        
     }
 
     getAtaque(){
@@ -48,17 +55,23 @@ class Luchador {
     }
 
     getStamina(){
-        return this.stamina;
+        this.stamina = stamina <= 0 ? 0: stamina;
     }
 
     setStamina(stamina){
-        this.stamina = stamina;
+        this.stamina = stamina <= 0 ? 0: stamina;
+        if(!this.stamina){
+            console.log(`${this.getName()} se ha quedado sin stamina!`)
+        }
     }
 
     atacar(victima){
-        const vidaResultante = victima.getVida() - this.getAtaque;
-        victima.setVida(vidaResultante);
-        victima.setVida(0);
+        const staminaResultante = this.getStamina() - this.getAtaque();
+        const vidaResultante = victima.getVida() - this.getAtaque();
+        if(staminaResultante >= 0){
+            victima.setVida(vidaResultante);
+            this.setStamina(staminaResultante);
+        }
     }
 
     meAtaca(atacante){
@@ -107,6 +120,17 @@ class UsuarioDeMana extends Luchador{
 
     mana;
 
+    getMana(){
+        return this.mana;
+    }
+
+    setMana(mana){
+       this.mana = mana <= 0 ? 0: mana;
+        if(!this.mana){
+            console.log(`${this.getName()} se ha quedado sin mana!`)
+        }
+    }
+
     constructor(vida, ataque, stamina, mana){
         super(vida, ataque, stamina)
         this.mana = mana;
@@ -114,6 +138,15 @@ class UsuarioDeMana extends Luchador{
 
     curar(vidaCurar){
         super.setVida(super.getVida + vidaCurar)
+    }
+
+    atacar(victima){
+        const manaResultante = this.getMana() - this.getAtaque();
+        const vidaResultante = victima.getVida() - this.getAtaque();
+        if(manaResultante >= 0){
+            victima.setVida(vidaResultante);
+            this.setMana(manaResultante);
+        }
     }
 }
 

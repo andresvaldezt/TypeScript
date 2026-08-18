@@ -22,10 +22,12 @@
  */
 
 class Luchador {
-    name;
-    vida;
-    ataque;
-    stamina;
+
+    constructor(name, vida, ataque){
+        this.name = name;
+        this.vida = vida;
+        this.ataque = ataque;
+    }
 
     getName(){
         return this.name;
@@ -54,8 +56,20 @@ class Luchador {
         this.ataque = ataque;
     }
 
+    meAtaca(atacante){
+        super.setVida(super.getVida() - atacante.getAtaque())
+    }
+}
+
+class UsuarioDeStamina extends Luchador{
+
+    constructor(name, vida, ataque, stamina){
+        super(name, vida, ataque, stamina);
+        this.stamina = stamina;
+    }
+
     getStamina(){
-        this.stamina = stamina <= 0 ? 0: stamina;
+        return this.stamina;
     }
 
     setStamina(stamina){
@@ -66,26 +80,23 @@ class Luchador {
     }
 
     atacar(victima){
-        const staminaResultante = this.getStamina() - this.getAtaque();
-        const vidaResultante = victima.getVida() - this.getAtaque();
+        const staminaResultante = this.getStamina() - super.getAtaque();
+        console.log(`${this.name} le quedan ${staminaResultante} de Stamina`)
+        const vidaResultante = victima.getVida() - super.getAtaque();
+        console.log(`Victima: ${victima.name}`)
         if(staminaResultante >= 0){
+            console.log('Ataque realizado')
             victima.setVida(vidaResultante);
             this.setStamina(staminaResultante);
         }
     }
-
-    meAtaca(atacante){
-        super.setVida(super.getVida() - atacante.getAtaque())
-    }
-
 }
 
-class Guerrero extends Luchador {
+class Guerrero extends UsuarioDeStamina {
 
-    defensa;
 
-    constructor(vida, ataque, stamina, defensa){
-        super(vida, ataque, stamina)
+    constructor(name, vida, ataque, stamina, defensa){
+        super(name, vida, ataque, stamina)
         this.defensa = defensa;
     }
 
@@ -102,11 +113,10 @@ class Guerrero extends Luchador {
     }
 }
 
-class Asesino extends Luchador {
+class Asesino extends UsuarioDeStamina {
 
-    dañoVeneno;
-    constructor(vida, ataque, stamina, dañoVeneno){
-        super(vida, ataque, stamina)
+    constructor(name, vida, ataque, stamina, dañoVeneno){
+        super(name, vida, ataque, stamina)
         this.dañoVeneno = dañoVeneno;
     }
 
@@ -118,7 +128,10 @@ class Asesino extends Luchador {
 
 class UsuarioDeMana extends Luchador{
 
-    mana;
+    constructor(name, vida, ataque, stamina, mana){
+        super(name, vida, ataque, stamina)
+        this.mana = mana;
+    }
 
     getMana(){
         return this.mana;
@@ -131,31 +144,27 @@ class UsuarioDeMana extends Luchador{
         }
     }
 
-    constructor(vida, ataque, stamina, mana){
-        super(vida, ataque, stamina)
-        this.mana = mana;
-    }
-
     curar(vidaCurar){
         super.setVida(super.getVida + vidaCurar)
     }
 
     atacar(victima){
-        const manaResultante = this.getMana() - this.getAtaque();
-        const vidaResultante = victima.getVida() - this.getAtaque();
+        const manaResultante = this.getMana() - super.getAtaque();
+        console.log(`${this.name} le quedan ${manaResultante} de Mana`)
+        const vidaResultante = victima.getVida() - super.getAtaque();
+        console.log(`Victima: ${victima.name}`)
         if(manaResultante >= 0){
+            console.log('Ataque realizado')
             victima.setVida(vidaResultante);
             this.setMana(manaResultante);
         }
     }
 }
 
-class Mago extends Luchador{
+class Mago extends UsuarioDeMana{
 
-    dañoBolaDeFuego;
-
-    constructor(vida, ataque, stamina, dañoBolaDeFuego, mana){
-        super(vida, ataque, stamina, mana)
+    constructor(name, vida, ataque, dañoBolaDeFuego, mana){
+        super(name, vida, ataque, mana)
         this.dañoBolaDeFuego = dañoBolaDeFuego;
         this.mana = mana;
     }
@@ -169,13 +178,20 @@ class Mago extends Luchador{
     }
 }
 
-class Curandero extends Luchador{
+class Curandero extends UsuarioDeMana{
 
-    constructor(vida, ataque, stamina, mana){
-        super(vida, ataque, stamina, mana)
+    constructor(name, vida, ataque, mana){
+        super(name, vida, ataque, mana)
     }
 
     curar(vidaCurar){
         super.curar(vidaCurar + 100);
     }
 }
+
+const mago = new Mago('Veigar', 200, 100, 1000, 1000)
+const guerrero = new Guerrero()
+const asesino = new Asesino('Talon', 200, 600, 1000, 200)
+const curandero = new Curandero()
+
+mago.atacar(asesino);
